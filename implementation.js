@@ -44,21 +44,18 @@ var cardModifier = class extends (ExtensionCommon.ExtensionAPI) {
   background-repeat: no-repeat !important;
   background-position: center !important;
   background-size: 16px 16px !important;
-  opacity: 0.6 !important;
+  opacity: 0.4 !important;
   cursor: pointer !important;
   transition: all 0.15s ease !important;
   pointer-events: auto !important;
 }
 
-.thread-card-icon-info::after:hover {
+.thread-card-icon-info.delete-btn-active::after {
   opacity: 1 !important;
-  background-color: rgba(255, 255, 255, 0.15) !important;
-  border-radius: 4px !important;
 }
 
 .thread-card-icon-info::after:active {
   transform: scale(0.85) !important;
-  background-color: rgba(255, 255, 255, 0.25) !important;
 }
 
 .thread-card-icon-info > * {
@@ -100,6 +97,10 @@ var cardModifier = class extends (ExtensionCommon.ExtensionAPI) {
               delete doc._quickDeleteDblHandler;
               delete doc._quickDeleteSuppressUntil;
             }
+            if (doc._quickDeleteHoverHandler) {
+              doc.removeEventListener("mousemove", doc._quickDeleteHoverHandler, true);
+              delete doc._quickDeleteHoverHandler;
+            }
           }
         }      
       }
@@ -133,6 +134,29 @@ var cardModifier = class extends (ExtensionCommon.ExtensionAPI) {
             }
           };
           doc.addEventListener("dblclick", doc._quickDeleteDblHandler, true);
+
+          doc._quickDeleteHoverHandler = (e) => {
+            const iconContainer = e.target.closest(".thread-card-icon-info");
+            const active = doc.querySelector(".thread-card-icon-info.delete-btn-active");
+            let isOverButton = false;
+
+            if (iconContainer) {
+              const rect = iconContainer.getBoundingClientRect();
+              const x = e.clientX - rect.left;
+              // Gleiche Logik wie beim Klick: nur die rechten 25px sind der Button
+              if (x >= rect.width - 25) {
+                isOverButton = true;
+              }
+            }
+
+            if (isOverButton) {
+              if (active && active !== iconContainer) active.classList.remove("delete-btn-active");
+              if (!iconContainer.classList.contains("delete-btn-active")) iconContainer.classList.add("delete-btn-active");
+            } else if (active) {
+              active.classList.remove("delete-btn-active");
+            }
+          };
+          doc.addEventListener("mousemove", doc._quickDeleteHoverHandler, true);
 
           doc._quickDeleteHandler = (e) => {
             try {
