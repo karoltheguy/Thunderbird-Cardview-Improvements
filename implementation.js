@@ -15,22 +15,34 @@ var cardModifier = class extends (ExtensionCommon.ExtensionAPI) {
 
     const cssText = `
 .thread-card-icon-info {
-  position: absolute !important;
-  bottom: -20px !important;
-  right: 0px !important;
+  position: relative !important;
+  bottom: auto !important;
+  right: auto !important;
   top: auto !important;
+  margin-left: auto !important;
+  margin-top: -6px !important;
+  margin-bottom: 0px !important;
+  align-self: flex-end !important;
 
   display: flex !important;
+  flex-wrap: nowrap !important;
   gap: 6px !important;
   z-index: 10 !important;
 
-  pointer-events: auto !important;
+  pointer-events: none !important;
   width: auto !important;
 }
 
-/* Fix for Thread Top cards (parents) which need different positioning */
+/* Adjustments for Compact/2-Line View */
+body.qcd-compact-mode .thread-card-icon-info {
+  top: 3px !important;
+}
+
+/* Fix for Group Headers and Thread Top cards */
+:is(tr, li)[is="thread-group-header"] .thread-card-icon-info,
 :is(tr, li)[aria-expanded] .thread-card-icon-info {
-  bottom: -2px !important;
+  align-self: center !important;
+  top: auto !important;
 }
 
 .thread-card-icon-info::after {
@@ -48,9 +60,10 @@ var cardModifier = class extends (ExtensionCommon.ExtensionAPI) {
   cursor: pointer !important;
   transition: all 0.15s ease !important;
   pointer-events: auto !important;
+  flex-shrink: 0 !important;
 }
 
-.thread-card-icon-info.delete-btn-active::after {
+.thread-card-icon-info:not(:has(*:hover)):hover::after {
   opacity: 1 !important;
 }
 
@@ -60,20 +73,6 @@ var cardModifier = class extends (ExtensionCommon.ExtensionAPI) {
 
 .thread-card-icon-info > * {
   pointer-events: auto !important;
-}
-
-/* 2-Line View Adjustments */
-body.qcd-2-line-view .thread-card-icon-info {
-  position: relative !important;
-  top: 3px !important;
-  margin-left: 4px !important;
-}
-body.qcd-2-line-view .subject {
-  min-width: 0 !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-  white-space: nowrap !important;
-  flex: 1 1 auto !important;
 }
 `;
 
@@ -111,19 +110,11 @@ body.qcd-2-line-view .subject {
               delete doc._quickDeleteDblHandler;
               delete doc._quickDeleteSuppressUntil;
             }
-            if (doc._quickDeleteHoverHandler) {
-              doc.removeEventListener("mousemove", doc._quickDeleteHoverHandler, true);
-              delete doc._quickDeleteHoverHandler;
+            if (doc._qcdResizeObserver) {
+              doc._qcdResizeObserver.disconnect();
+              delete doc._qcdResizeObserver;
+              doc.body.classList.remove("qcd-compact-mode");
             }
-            if (doc._quickDeleteResizeObserver) {
-              doc._quickDeleteResizeObserver.disconnect();
-              delete doc._quickDeleteResizeObserver;
-            }
-            if (doc._quickDeleteMutationObserver) {
-              doc._quickDeleteMutationObserver.disconnect();
-              delete doc._quickDeleteMutationObserver;
-            }
-            doc.body.classList.remove("qcd-2-line-view");
           }
         }      
       }
@@ -141,37 +132,23 @@ body.qcd-2-line-view .subject {
           // Wait until thread cards exist.
           await waitForThreadCards(doc);
 
-          // Robust detection of 2-line view (handles view switching/re-renders)
-          let observedCard = null;
-          
-          doc._quickDeleteResizeObserver = new doc.defaultView.ResizeObserver(entries => {
-            for (let entry of entries) {
-              if (entry.target === observedCard) {
-                if (entry.target.clientHeight < 58) {
-                  doc.body.classList.add("qcd-2-line-view");
-                } else {
-                  doc.body.classList.remove("qcd-2-line-view");
-                }
+          // Stable detection of view density (Compact/2-Line vs Standard)
+          // We observe one card to determine the mode for the list.
+          // This avoids per-card layout thrashing.
+          if (!doc._qcdResizeObserver) {
+            doc._qcdResizeObserver = new doc.defaultView.ResizeObserver(entries => {
+              if (!entries.length) return;
+              const height = entries[0].contentRect.height;
+              // Threshold: Standard cards are usually > 55px, Compact < 50px
+              if (height < 65) {
+                doc.body.classList.add("qcd-compact-mode");
+              } else {
+                doc.body.classList.remove("qcd-compact-mode");
               }
-            }
-          });
-
-          const refreshObserver = () => {
-            if (observedCard && observedCard.isConnected) return;
-            
-            const iconContainer = doc.querySelector(".thread-card-icon-info");
-            const newCard = iconContainer?.closest("tr, li, thread-card");
-            if (newCard) {
-              observedCard = newCard;
-              doc._quickDeleteResizeObserver.observe(newCard);
-            }
-          };
-
-          doc._quickDeleteMutationObserver = new doc.defaultView.MutationObserver(refreshObserver);
-          doc._quickDeleteMutationObserver.observe(doc.body, { childList: true, subtree: true });
-          
-          // Initial check
-          refreshObserver();
+            });
+            const sampleCard = doc.querySelector("tr[is='thread-card'], li[is='thread-card'], tr.thread-card, li.thread-card");
+            if (sampleCard) doc._qcdResizeObserver.observe(sampleCard);
+          }
 
           // Apply CSS.
           addDynamicCSS(doc, styleId, cssText);
@@ -189,29 +166,6 @@ body.qcd-2-line-view .subject {
             }
           };
           doc.addEventListener("dblclick", doc._quickDeleteDblHandler, true);
-
-          doc._quickDeleteHoverHandler = (e) => {
-            const iconContainer = e.target.closest(".thread-card-icon-info");
-            const active = doc.querySelector(".thread-card-icon-info.delete-btn-active");
-            let isOverButton = false;
-
-            if (iconContainer) {
-              const rect = iconContainer.getBoundingClientRect();
-              const x = e.clientX - rect.left;
-              // Same logic as click: only the right 25px are the button
-              if (x >= rect.width - 25) {
-                isOverButton = true;
-              }
-            }
-
-            if (isOverButton) {
-              if (active && active !== iconContainer) active.classList.remove("delete-btn-active");
-              if (!iconContainer.classList.contains("delete-btn-active")) iconContainer.classList.add("delete-btn-active");
-            } else if (active) {
-              active.classList.remove("delete-btn-active");
-            }
-          };
-          doc.addEventListener("mousemove", doc._quickDeleteHoverHandler, true);
 
           doc._quickDeleteHandler = (e) => {
             try {
