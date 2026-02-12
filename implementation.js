@@ -16,7 +16,7 @@ var cardModifier = class extends (ExtensionCommon.ExtensionAPI) {
     const cssText = `
 .thread-card-icon-info {
   position: relative !important;
-  bottom: auto !important;
+  bottom: -2px !important;
   right: auto !important;
   top: auto !important;
   margin-left: auto !important;
@@ -38,11 +38,17 @@ body.qcd-compact-mode .thread-card-icon-info {
   top: 3px !important;
 }
 
-/* Fix for Group Headers and Thread Top cards */
+/* Fix for Group Headers and Thread Top cards: Center container, hide delete button */
 :is(tr, li)[is="thread-group-header"] .thread-card-icon-info,
 :is(tr, li)[aria-expanded] .thread-card-icon-info {
   align-self: center !important;
   top: auto !important;
+}
+
+/* Hide delete button on Group Headers and Thread Top cards */
+:is(tr, li)[is="thread-group-header"] .thread-card-icon-info::after,
+:is(tr, li)[aria-expanded] .thread-card-icon-info::after {
+  display: none !important;
 }
 
 .thread-card-icon-info::after {
@@ -196,7 +202,7 @@ body.qcd-compact-mode .thread-card-icon-info {
                 } catch (err) {
                   // ignore deletion errors
                 }
-              }, 130);
+              }, 150);
             } catch (err) {
               console.error("Error in quick delete handler:", err);
             }
