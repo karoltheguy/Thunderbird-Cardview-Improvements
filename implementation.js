@@ -196,13 +196,40 @@ body.qcd-compact-mode .thread-card-icon-info {
               // UI selection behavior but suppress following dblclick events.
               card.click();
               const win = e.target.ownerDocument.defaultView;
-              win.setTimeout(() => {
+
+              // Try to delete specifically if possible (safer than global command)
+              let handled = false;
+              const target = card.message || card.messageKey;
+              if (win.gFolderDisplay && target) {
                 try {
-                  win.goDoCommand("cmd_delete");
-                } catch (err) {
-                  // ignore deletion errors
+                  let msgHdr = target;
+                  if (typeof msgHdr === "number" && win.gFolderDisplay.selectedFolder) {
+                    msgHdr = win.gFolderDisplay.selectedFolder.GetMessageHeader(msgHdr);
+                  }
+                  if (msgHdr) {
+                    win.gFolderDisplay.deleteMessages([msgHdr]);
+                    handled = true;
+                  }
+                } catch (ex) {
+                  console.error("QuickDelete: Direct delete failed", ex);
                 }
-              }, 150);
+              }
+
+              if (!handled) {
+                win.setTimeout(() => {
+                  try {
+                    // Verify selection matches the clicked card before deleting
+                    const isActive = win.document.activeElement && win.document.activeElement.closest("tr, li, thread-card") === card;
+                    const isSelected = card.classList.contains("selected") || card.getAttribute("aria-selected") === "true";
+
+                    if (isActive || isSelected) {
+                      win.goDoCommand("cmd_delete");
+                    }
+                  } catch (err) {
+                    // ignore deletion errors
+                  }
+                }, 100);
+              }
             } catch (err) {
               console.error("Error in quick delete handler:", err);
             }
