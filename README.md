@@ -8,6 +8,8 @@ The add-on may be available on Thunderbird Add-ons:
 
 [Quick Card Delete Button](https://addons.thunderbird.net/de/thunderbird/addon/quick-card-delete-button/)
 
+⚠️ Thunderbird is not currently reviewing new add-ons with Experiment APIs. Until ESR 153 is released, installation must be done manually via GitHub. Official store publication will resume once reviews reopen.
+
 If you want to install it manually:
 
 1. Download the `.xpi` file from this repository.
