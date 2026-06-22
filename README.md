@@ -14,12 +14,12 @@ Keep your message list clean by hiding the delete button until you hover over a 
 ### ⭐ Hover-only Favorite Star
 Reduce visual noise by hiding the favorite (star) icon at rest. It will smoothly reveal itself when you hover over the message card.
 
-![Placeholder: Screenshot showing favorite star on card hover]()
+<img width="426" height="240" alt="favorite toggle" src="https://github.com/user-attachments/assets/84997fe9-a550-481d-b0e3-4761ab7c411a" />
 
 ### 🔵 Read/Unread Indicator Bar
 Adds a distinct blue vertical bar on the left edge of unread messages for better visibility. You can click this bar directly to toggle the message's read/unread status.
 
-![Placeholder: Screenshot showing the blue read/unread vertical bar]()
+<img width="426" height="240" alt="unread toggle" src="https://github.com/user-attachments/assets/ed47a494-718a-4382-8490-049f2d99e609" />
 
 ## Configuration
 

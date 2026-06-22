@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Quick Card Delete — Settings</title>
+  <title>Cardview QOL — Settings</title>
   <style>
     :root {
       --bg: #1e1e2e;
@@ -140,18 +141,18 @@
       background: var(--toggle-thumb);
       border-radius: 50%;
       transition: transform 0.2s ease;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
     }
 
-    .toggle-input:checked + .toggle-label .toggle-track {
+    .toggle-input:checked+.toggle-label .toggle-track {
       background: var(--toggle-on);
     }
 
-    .toggle-input:checked + .toggle-label .toggle-thumb {
+    .toggle-input:checked+.toggle-label .toggle-thumb {
       transform: translateX(20px);
     }
 
-    .toggle-input:focus-visible + .toggle-label .toggle-track {
+    .toggle-input:focus-visible+.toggle-label .toggle-track {
       outline: 2px solid var(--accent);
       outline-offset: 2px;
     }
@@ -177,10 +178,11 @@
     }
   </style>
 </head>
+
 <body>
   <header>
-    <h1>Quick Card Delete — Settings</h1>
-    <p>Customize what appears on card hover in Thunderbird's Card View.</p>
+    <h1>Cardview QOL — Settings</h1>
+    <p>Customize your cardview experience in Thunderbird.</p>
   </header>
 
   <p class="section-label">Card Hover Features</p>
@@ -189,7 +191,7 @@
     <div class="setting-row">
       <div class="setting-info">
         <label for="toggle-delete">Delete button: hover-only</label>
-        <span class="description">ON: trash icon appears only when hovering a card. OFF: always visible (original behavior).</span>
+        <span class="description">ON: trash icon appears only when hovering a card. OFF: always visible.</span>
       </div>
       <div class="toggle-wrapper">
         <input class="toggle-input" type="checkbox" id="toggle-delete" data-key="showDeleteButton" />
@@ -217,7 +219,8 @@
     <div class="setting-row">
       <div class="setting-info">
         <label for="toggle-indicator">Read/unread bar</label>
-        <span class="description">Show a blue vertical bar on the left of unread messages. Click it to toggle read status.</span>
+        <span class="description">Show a blue vertical bar on the left of unread messages. Click it to toggle read
+          status.</span>
       </div>
       <div class="toggle-wrapper">
         <input class="toggle-input" type="checkbox" id="toggle-indicator" data-key="showReadIndicator" />
@@ -229,9 +232,10 @@
     </div>
   </div>
 
-  <div class="status-bar" id="status-bar">Changes apply immediately — no restart needed.</div>
+  <div class="status-bar" id="status-bar"></div>
   <p class="version" id="version-label"></p>
 
   <script src="options.js"></script>
 </body>
+
 </html>

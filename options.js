@@ -40,7 +40,7 @@ function flashSaved() {
   statusBar.classList.add("saved");
   clearTimeout(statusBar._timer);
   statusBar._timer = setTimeout(() => {
-    statusBar.textContent = "Changes apply immediately — no restart needed.";
+    statusBar.textContent = "";
     statusBar.classList.remove("saved");
   }, 2000);
 }
