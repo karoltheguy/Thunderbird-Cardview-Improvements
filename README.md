@@ -1,3 +1,5 @@
+<img width="462" height="213" alt="Cardview QOL" src="https://github.com/user-attachments/assets/d97af3e1-3d46-4cea-a0e5-89265462d030" />
+
 # Quick Card Features for Thunderbird
 
 This add-on enhances Thunderbird's Cards View by allowing you to customize the appearance and behavior of various card elements, reducing visual clutter and improving your email workflow.
