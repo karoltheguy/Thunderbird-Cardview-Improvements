@@ -55,4 +55,4 @@ To install the add-on manually:
 I started this project as a fork of the Quick Card Delete Button add-on which was mostly vibe-coded. 
 I have added new features and improved the existing ones, still using AI to help me do it though.
 
-
+This add-on was based on ![sim32101/Delete-Button-for-Thunderbird](https://github.com/sim32101/Delete-Button-for-Thunderbird)
