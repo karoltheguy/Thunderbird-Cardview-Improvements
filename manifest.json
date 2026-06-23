@@ -19,9 +19,9 @@
     "browser_style": false
   },
   "icons": {
-    "32": "CardViewQOL32.jpg",
-    "48": "CardViewQOL48.jpg",
-    "128": "CardViewQOL128.jpg"
+    "32": "CardviewQOL32.jpg",
+    "48": "CardviewQOL48.jpg",
+    "128": "CardviewQOL128.jpg"
   },
   "experiment_apis": {
     "cardModifier": {
