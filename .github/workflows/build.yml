@@ -1,0 +1,25 @@
+name: Build XPI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build XPI file
+        run: |
+          zip -r CardViewQOL.xpi * -x "*.git*" "*.github*" "*.xpi" "README.md"
+          
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: CardViewQOL-build
+          path: CardViewQOL.xpi
